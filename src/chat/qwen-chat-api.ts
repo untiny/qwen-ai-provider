@@ -153,16 +153,18 @@ export const qwenChatResponseSchema = lazySchema(() =>
             role: z.literal('assistant').nullish(),
             content: z.string().nullish(),
             reasoning_content: z.string().nullish(),
-            tool_calls: z.array(
-              z.object({
-                id: z.string().nullish(),
-                type: z.literal('function'),
-                function: z.object({
-                  name: z.string(),
-                  arguments: z.string(),
+            tool_calls: z
+              .array(
+                z.object({
+                  id: z.string().nullish(),
+                  type: z.literal('function'),
+                  function: z.object({
+                    name: z.string(),
+                    arguments: z.string(),
+                  }),
                 }),
-              }),
-            ),
+              )
+              .nullish(),
           }),
         }),
       ),
