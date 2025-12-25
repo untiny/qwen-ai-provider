@@ -1,0 +1,73 @@
+{
+  "name": "@untiny/qwen-ai-provider",
+  "version": "0.0.1",
+  "description": "Vercel AI Provider v6 for running Qwen AI models",
+  "author": "untiny <untiny@ooix.cn>",
+  "license": "Apache-2.0",
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist/**/*",
+    "CHANGELOG.md",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "pnpm clean && tsup",
+    "build:watch": "pnpm clean && tsup --watch",
+    "clean": "del-cli dist *.tsbuildinfo",
+    "lint": "biome lint --write",
+    "type-check": "tsc --build",
+    "check": "biome check --write",
+    "test": "pnpm test:node && pnpm test:edge",
+    "test:update": "pnpm test:node -u",
+    "test:watch": "vitest --config vitest.node.config.js",
+    "test:edge": "vitest --config vitest.edge.config.js --run",
+    "test:node": "vitest --config vitest.node.config.js --run"
+  },
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
+  "dependencies": {
+    "@ai-sdk/provider": "^3.0.0",
+    "@ai-sdk/provider-utils": "^4.0.1"
+  },
+  "devDependencies": {
+    "@ai-sdk/test-server": "^1.0.0",
+    "@biomejs/biome": "^2.3.10",
+    "@types/node": "^20.19.27",
+    "del-cli": "^7.0.0",
+    "tsup": "^8.5.1",
+    "typescript": "^5.9.3",
+    "vite-tsconfig-paths": "^6.0.3",
+    "vitest": "^4.0.16",
+    "zod": "^4.1.8"
+  },
+  "peerDependencies": {
+    "zod": "^3.25.76 || ^4.1.8"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "homepage": "https://github.com/untiny/qwen-ai-provider",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/untiny/qwen-ai-provider.git"
+  },
+  "bugs": {
+    "url": "https://github.com/untiny/qwen-ai-provider/issues"
+  },
+  "keywords": [
+    "ai",
+    "qwen"
+  ]
+}

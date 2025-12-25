@@ -1,0 +1,19 @@
+{
+  // Disable the default formatter, use eslint instead
+  "editor.defaultFormatter": "biomejs.biome",
+  "editor.formatOnSave": true,
+  "prettier.enable": false,
+  "biome.enabled": true,
+  // Auto fix
+  "editor.codeActionsOnSave": {
+    "source.fixAll.biome": "explicit",
+    "source.organizeImports.biome": "explicit"
+  },
+  "cSpell.words": ["deepseek", "logprob", "logprobs", "qwen"],
+  "[javascript]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  }
+}
