@@ -1,6 +1,6 @@
 {
   "name": "@untiny/qwen-ai-provider",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Vercel AI Provider v6 for running Qwen AI models",
   "author": "untiny <untiny@ooix.cn>",
   "license": "Apache-2.0",
