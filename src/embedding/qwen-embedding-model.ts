@@ -1,21 +1,9 @@
 import { EmbeddingModelV3, TooManyEmbeddingValuesForCallError } from '@ai-sdk/provider'
-import {
-  combineHeaders,
-  createJsonResponseHandler,
-  FetchFunction,
-  parseProviderOptions,
-  postJsonToApi,
-} from '@ai-sdk/provider-utils'
-import { qwenFailedResponseHandler } from '../qwen-error'
+import { combineHeaders, createJsonResponseHandler, parseProviderOptions, postJsonToApi } from '@ai-sdk/provider-utils'
+import { QwenConfig } from '@/qwe-config'
+import { qwenFailedResponseHandler } from '@/qwen-error'
 import { qwenTextEmbeddingResponseSchema } from './qwen-embedding-api'
 import { QwenEmbeddingModelId, qwenEmbeddingProviderOptions } from './qwen-embedding-options'
-
-interface QwenEmbeddingConfig {
-  provider: string
-  url: (options: { modelId: string; path: string }) => string
-  headers: () => Record<string, string | undefined>
-  fetch?: FetchFunction
-}
 
 export class QwenEmbeddingModel implements EmbeddingModelV3 {
   readonly specificationVersion = 'v3'
@@ -23,13 +11,13 @@ export class QwenEmbeddingModel implements EmbeddingModelV3 {
   readonly maxEmbeddingsPerCall = 2048
   readonly supportsParallelCalls = true
 
-  private readonly config: QwenEmbeddingConfig
+  private readonly config: QwenConfig
 
   get provider(): string {
     return this.config.provider
   }
 
-  constructor(modelId: QwenEmbeddingModelId, config: QwenEmbeddingConfig) {
+  constructor(modelId: QwenEmbeddingModelId, config: QwenConfig) {
     this.modelId = modelId
     this.config = config
   }

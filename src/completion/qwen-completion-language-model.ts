@@ -12,13 +12,13 @@ import {
   combineHeaders,
   createEventSourceResponseHandler,
   createJsonResponseHandler,
-  FetchFunction,
   ParseResult,
   postJsonToApi,
 } from '@ai-sdk/provider-utils'
 import { getResponseMetadata } from '@/get-response-metadata'
 import { mapQwenFinishReason } from '@/map-qwen-finish-reason'
-import { qwenFailedResponseHandler } from '../qwen-error'
+import { QwenConfig } from '@/qwe-config'
+import { qwenFailedResponseHandler } from '@/qwen-error'
 import { convertQwenCompletionUsage } from './convert-qwen-completion-usage'
 import { convertToQwenCompletionPrompt } from './convert-to-qwen-completion-prompt'
 import {
@@ -30,21 +30,14 @@ import {
 } from './qwen-completion-api'
 import { QwenCompletionModelId } from './qwen-completion-options'
 
-type QwenCompletionConfig = {
-  provider: string
-  headers: () => Record<string, string | undefined>
-  url: (options: { modelId: string; path: string }) => string
-  fetch?: FetchFunction
-}
-
 export class QwenCompletionLanguageModel implements LanguageModelV3 {
   readonly specificationVersion = 'v3'
 
   readonly modelId: QwenCompletionModelId
 
-  private readonly config: QwenCompletionConfig
+  private readonly config: QwenConfig
 
-  constructor(modelId: QwenCompletionModelId, config: QwenCompletionConfig) {
+  constructor(modelId: QwenCompletionModelId, config: QwenConfig) {
     this.modelId = modelId
     this.config = config
   }
@@ -214,9 +207,9 @@ export class QwenCompletionLanguageModel implements LanguageModelV3 {
             const value = chunk.value
 
             // handle error chunks:
-            if ('object' in value) {
+            if ('error' in value) {
               finishReason = { unified: 'error', raw: undefined }
-              controller.enqueue({ type: 'error', error: value.message })
+              controller.enqueue({ type: 'error', error: value.error.message })
               return
             }
 

@@ -2,9 +2,10 @@ import { InferSchema, lazySchema, zodSchema } from '@ai-sdk/provider-utils'
 import { z } from 'zod'
 import { ChatStreamOptions } from '@/chat/qwen-chat-api'
 import { qwenErrorDataSchema } from '../qwen-error'
+import { QwenCompletionModelId } from './qwen-completion-options'
 
 export interface QwenCompletionRequest {
-  model: string
+  model: QwenCompletionModelId
   prompt: string
   /** 是否以流式输出方式回复 */
   stream?: boolean | undefined

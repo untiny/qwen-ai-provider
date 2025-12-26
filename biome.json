@@ -7,10 +7,7 @@
   },
   "files": {
     "ignoreUnknown": true,
-    "includes": [
-      "**/*.{ts,js}",
-      "!dist"
-    ]
+    "includes": ["**/*.{ts,js}", "!dist"]
   },
   "formatter": {
     "enabled": true,

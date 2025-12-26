@@ -13,16 +13,16 @@ import {
   combineHeaders,
   createEventSourceResponseHandler,
   createJsonResponseHandler,
-  FetchFunction,
   generateId,
   isParsableJson,
   ParseResult,
   postJsonToApi,
 } from '@ai-sdk/provider-utils'
 import { QwenChatModeId } from '@/chat/qwen-chat-options'
+import { getResponseMetadata } from '@/get-response-metadata'
+import { mapQwenFinishReason } from '@/map-qwen-finish-reason'
+import { QwenConfig } from '@/qwe-config'
 import { qwenFailedResponseHandler } from '@/qwen-error'
-import { getResponseMetadata } from '../get-response-metadata'
-import { mapQwenFinishReason } from '../map-qwen-finish-reason'
 import { convertQwenChatUsage } from './convert-qwen-chat-usage'
 import { convertToQwenChatMessages } from './convert-to-qwen-chat-messages'
 import {
@@ -34,14 +34,6 @@ import {
 } from './qwen-chat-api'
 import { prepareChatTools } from './qwen-chat-prepare-tools'
 
-type QwenChatConfig = {
-  provider: string
-  baseURL: string
-  headers: () => Record<string, string | undefined>
-  url: (options: { modelId: string; path: string }) => string
-  fetch?: FetchFunction
-}
-
 export class QwenChatLanguageModel implements LanguageModelV3 {
   readonly specificationVersion = 'v3'
 
@@ -51,9 +43,9 @@ export class QwenChatLanguageModel implements LanguageModelV3 {
     'image/*': [/^https?:\/\/.*$/],
   }
 
-  private readonly config: QwenChatConfig
+  private readonly config: QwenConfig
 
-  constructor(modelId: QwenChatModeId, config: QwenChatConfig) {
+  constructor(modelId: QwenChatModeId, config: QwenConfig) {
     this.modelId = modelId
     this.config = config
   }
@@ -241,11 +233,11 @@ export class QwenChatLanguageModel implements LanguageModelV3 {
             const value = chunk.value
 
             // handle error chunks:
-            if ('object' in value) {
+            if ('error' in value) {
               finishReason = { unified: 'error', raw: undefined }
               controller.enqueue({
                 type: 'error',
-                error: value.message,
+                error: value.error.message,
               })
               return
             }

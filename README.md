@@ -33,6 +33,11 @@ const { embedding } = await embed({
   model: qwen.embeddingModel('text-embedding-v4'),
   value: 'sunny day at the beach',
 });
+
+const { image } = await generateImage({
+  model: qwen.imageModel('qwen-image-plus'),
+  prompt: '一个在海边沙滩上的小狗',
+});
 ```
 
 ## Documentation

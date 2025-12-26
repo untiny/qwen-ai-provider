@@ -1,4 +1,4 @@
-import { EmbeddingModelV3, ImageModelV3, LanguageModelV3, NoSuchModelError, ProviderV3 } from '@ai-sdk/provider'
+import { EmbeddingModelV3, ImageModelV3, LanguageModelV3, ProviderV3 } from '@ai-sdk/provider'
 import { FetchFunction, loadApiKey, VERSION, withoutTrailingSlash, withUserAgentSuffix } from '@ai-sdk/provider-utils'
 import { QwenChatLanguageModel } from './chat/qwen-chat-language-model'
 import { QwenChatModeId } from './chat/qwen-chat-options'
@@ -6,6 +6,8 @@ import { QwenCompletionLanguageModel } from './completion/qwen-completion-langua
 import { QwenCompletionModelId } from './completion/qwen-completion-options'
 import { QwenEmbeddingModel } from './embedding/qwen-embedding-model'
 import { QwenEmbeddingModelId } from './embedding/qwen-embedding-options'
+import { QwenImageModel } from './image/qwen-image-model'
+import { QwenImageModelId } from './image/qwen-image-options'
 
 export interface QwenProvider extends ProviderV3 {
   (modelId: QwenChatModeId): LanguageModelV3
@@ -46,7 +48,7 @@ export interface QwenProvider extends ProviderV3 {
    */
   textEmbeddingModel(modelId: QwenEmbeddingModelId): EmbeddingModelV3
 
-  imageModel(modelId: string): ImageModelV3
+  imageModel(modelId: QwenImageModelId): ImageModelV3
 }
 
 export interface QwenProviderSettings {
@@ -55,6 +57,12 @@ export interface QwenProviderSettings {
    * 默认前缀是"https://dashscope.aliyuncs.com/compatible-mode/v1"。
    */
   baseURL?: string
+
+  /**
+   * 对 API 调用使用不同的 URL 前缀，例如使用代理服务器。
+   * 默认前缀是"https://dashscope.aliyuncs.com/api/v1"。
+   */
+  apiUrl?: string
 
   /**
    * 使用“Authorization”标头发送的 API 密钥。
@@ -76,6 +84,7 @@ export interface QwenProviderSettings {
 /** 创建 Qwen AI 提供程序实例。 */
 export function createQwen(options?: QwenProviderSettings): QwenProvider {
   const baseURL = withoutTrailingSlash(options?.baseURL) ?? 'https://dashscope.aliyuncs.com/compatible-mode/v1'
+  const apiUrl = withoutTrailingSlash(options?.apiUrl) ?? 'https://dashscope.aliyuncs.com/api/v1'
 
   const getHeaders = () => {
     const apiKey = loadApiKey({
@@ -95,10 +104,9 @@ export function createQwen(options?: QwenProviderSettings): QwenProvider {
   const createChatModel = (modelId: QwenChatModeId) => {
     return new QwenChatLanguageModel(modelId, {
       provider: 'qwen.chat',
-      baseURL,
+      url: ({ path }) => `${baseURL}${path}`,
       headers: getHeaders,
       fetch: options?.fetch,
-      url: ({ path }) => `${baseURL}${path}`,
     })
   }
 
@@ -120,6 +128,15 @@ export function createQwen(options?: QwenProviderSettings): QwenProvider {
     })
   }
 
+  const createImageModel = (modelId: QwenImageModelId) => {
+    return new QwenImageModel(modelId, {
+      provider: `qwen.image`,
+      url: ({ path }) => `${apiUrl}${path}`,
+      headers: getHeaders,
+      fetch: options?.fetch,
+    })
+  }
+
   const provider = (modelId: QwenChatModeId) => {
     if (new.target) {
       throw new Error('The Qwen model function cannot be called with the new keyword.')
@@ -136,9 +153,7 @@ export function createQwen(options?: QwenProviderSettings): QwenProvider {
   provider.embeddingModel = createEmbeddingModel
   provider.textEmbedding = createEmbeddingModel
   provider.textEmbeddingModel = createEmbeddingModel
-  provider.imageModel = (modelId: string) => {
-    throw new NoSuchModelError({ modelId, modelType: 'imageModel' })
-  }
+  provider.imageModel = createImageModel
 
   return provider
 }
